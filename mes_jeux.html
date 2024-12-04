@@ -10,29 +10,35 @@
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
-                background-color: #1e1e1e;
+                background-color: #000000; /* Fond noir */
             }
             .header {
                 position: sticky;
                 top: 0;
-                background-color: #3e2723; /* Chocolat foncé */
+                background-color: #1e1e1e; /* Fond légèrement plus clair */
                 padding: 10px;
                 text-align: center;
                 z-index: 1000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
-            .header input {
-                width: 80%;
+            .header input[type="text"] {
+                width: 60%;
                 padding: 10px;
                 border: none;
                 border-radius: 5px;
-                margin-bottom: 10px;
-            }
-            .header label {
+                background-color: #000000; /* Fond du champ de recherche noir */
                 color: white;
                 margin-right: 10px;
             }
             .header input[type="range"] {
-                width: 80%;
+                width: 150px; /* Largeur du curseur */
+                margin-left: 10px;
+            }
+            .header label {
+                color: white;
+                margin-right: 10px;
             }
             .container {
                 display: flex;
