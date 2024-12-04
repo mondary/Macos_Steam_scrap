@@ -5,6 +5,10 @@ import webbrowser
 import time
 import requests
 import vdf
+import json
+
+# Fichier pour stocker les informations de connexion
+CREDENTIALS_FILE = 'credentials.json'
 
 def installer_dependances():
     print("Vérification et installation des dépendances nécessaires...")
@@ -14,6 +18,18 @@ def installer_dependances():
     except Exception as e:
         print(f"Erreur lors de l'installation des dépendances : {e}")
         sys.exit(1)
+
+def charger_identifiants():
+    """Charge les identifiants depuis le fichier JSON."""
+    if os.path.exists(CREDENTIALS_FILE):
+        with open(CREDENTIALS_FILE, 'r') as f:
+            return json.load(f)
+    return None
+
+def sauvegarder_identifiants(api_key, nom_utilisateur, steam_id):
+    """Sauvegarde les identifiants dans un fichier JSON."""
+    with open(CREDENTIALS_FILE, 'w') as f:
+        json.dump({'api_key': api_key, 'nom_utilisateur': nom_utilisateur, 'steam_id': steam_id}, f)
 
 def ouvrir_page_api():
     print("\nOuverture de la page Steam API Key dans votre navigateur...")
@@ -73,6 +89,8 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
                     print(f"ID: {appid}")
                     print(f"Temps de jeu: {heures}h {minutes}min")
                     print("-" * 50)
+                
+                return True  # Indiquer que la récupération a réussi
             else:
                 print("Aucun jeu trouvé dans votre bibliothèque.")
         else:
@@ -81,6 +99,8 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
     
     except Exception as e:
         print(f"Une erreur est survenue : {e}")
+    
+    return False  # Indiquer que la récupération a échoué
 
 def obtenir_collections(steam_id):
     chemin_base = os.path.expanduser('~/Library/Application Support/Steam/userdata')
@@ -109,12 +129,6 @@ def obtenir_collections(steam_id):
                 print(f"Erreur lors de la lecture des collections : {e}")
 
 def obtenir_bibliotheque_et_collections():
-    # Installation des dépendances
-    installer_dependances()
-    
-    # Affichage du formulaire
-    afficher_formulaire()
-    
     # Ouverture de la page API
     ouvrir_page_api()
     
@@ -134,12 +148,33 @@ def obtenir_bibliotheque_et_collections():
     afficher_question("+" + "-" * 48 + "+", "Entrez votre SteamID64 (le nombre à 17 chiffres) :")
     steam_id = input().strip()
     
-    # Obtenir la bibliothèque
-    obtenir_bibliotheque_steam(api_key, steam_id)
+    # Obtenir la bibliothèque et sauvegarder les identifiants si réussi
+    if obtenir_bibliotheque_steam(api_key, steam_id):
+        sauvegarder_identifiants(api_key, nom_utilisateur, steam_id)
+
+def main():
+    print("=== Programme de récupération de la bibliothèque Steam ===")
     
-    # Obtenir les collections
-    obtenir_collections(steam_id)
+    # Charger les identifiants
+    identifiants = charger_identifiants()
+    
+    if identifiants:
+        print("Vous avez des identifiants enregistrés.")
+        print("1. Lancer la récupération pour '{}'".format(identifiants['nom_utilisateur']))
+        print("2. Créer une nouvelle connexion")
+        choix = input("Choisissez une option (1 ou 2) : ")
+        
+        if choix == '1':
+            # Utiliser les identifiants stockés
+            obtenir_bibliotheque_steam(identifiants['api_key'], identifiants['steam_id'])
+            obtenir_collections(identifiants['steam_id'])
+        elif choix == '2':
+            obtenir_bibliotheque_et_collections()
+        else:
+            print("Choix invalide. Veuillez relancer le programme.")
+    else:
+        print("Aucun identifiant trouvé. Veuillez entrer vos informations.")
+        obtenir_bibliotheque_et_collections()
 
 if __name__ == "__main__":
-    print("=== Programme de récupération de la bibliothèque Steam ===")
-    obtenir_bibliotheque_et_collections()
+    main()
