@@ -287,8 +287,11 @@ def generer_page_web(jeux, taille_tuile=300):
         else:
             badge_couleur = "green"
 
+        # URL de la page Steam du jeu
+        url_steam = f"https://store.steampowered.com/app/{appid}/"
+
         contenu_html += f"""
-            <div class="tuile" data-name="{nom}">
+            <a href="{url_steam}" class="tuile" data-name="{nom}" target="_blank">
                 <img src="{image_path}" alt="{nom}">
                 <div class="text">
                     <h2>{nom}</h2>
@@ -297,7 +300,7 @@ def generer_page_web(jeux, taille_tuile=300):
                         <span>ID: {appid}</span>
                     </div>
                 </div>
-            </div>
+            </a>
         """
 
     contenu_html += """
