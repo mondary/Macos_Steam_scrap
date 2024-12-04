@@ -240,6 +240,19 @@ def generer_page_web(jeux, taille_tuile=300):
                 color: #aaa; /* Couleur plus claire pour l'ID */
                 font-size: 8px; /* Taille de police encore plus petite pour l'ID */
             }}
+            .badge {{
+                padding: 5px 10px;
+                border-radius: 5px;
+                color: white;
+                font-size: 12px;
+                display: inline-block;
+                margin-right: 5px; /* Espacement entre le badge et l'ID */
+                opacity: 0; /* Masquer par défaut */
+                transition: opacity 0.3s ease; /* Transition pour l'opacité */
+            }}
+            .tuile:hover .badge {{
+                opacity: 1; /* Afficher au survol */
+            }}
         </style>
     </head>
     <body>
@@ -264,13 +277,23 @@ def generer_page_web(jeux, taille_tuile=300):
         # Afficher le temps de jeu seulement s'il est supérieur à 0
         temps_affiche = f"{heures}h {minutes}min" if temps_jeu > 0 else "0min"
 
+        # Déterminer la couleur du badge en fonction du temps de jeu
+        if temps_jeu < 30:
+            badge_couleur = "black"
+        elif temps_jeu < 60:
+            badge_couleur = "lightcoral"  # Rouge clair
+        elif temps_jeu < 180:
+            badge_couleur = "lightorange"  # Orange clair
+        else:
+            badge_couleur = "green"
+
         contenu_html += f"""
             <div class="tuile" data-name="{nom}">
                 <img src="{image_path}" alt="{nom}">
                 <div class="text">
                     <h2>{nom}</h2>
                     <div class="info">
-                        <span>{temps_affiche}</span>
+                        <span class="badge" style="background-color: {badge_couleur};">{temps_affiche}</span>
                         <span>ID: {appid}</span>
                     </div>
                 </div>
