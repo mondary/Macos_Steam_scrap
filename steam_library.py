@@ -117,7 +117,7 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
     
     return []  # Retourner une liste vide si la récupération a échoué
 
-def generer_page_web(jeux, taille_tuile=460):
+def generer_page_web(jeux, taille_tuile=300):
     """Génère une page HTML affichant les jeux sous forme de mosaïque avec un moteur de recherche."""
     nombre_jeux = len(jeux) if jeux else 0  # Compter le nombre de jeux, afficher 0 si la liste est vide
     nombre_gog = 0  # Remplacez par le nombre de jeux GOG si disponible
@@ -203,7 +203,7 @@ def generer_page_web(jeux, taille_tuile=460):
                 left: 0;
                 z-index: 1;
                 opacity: 0.8;
-                border-radius: 15px; /* Coins arrondis pour l'image */
+                /* border-radius: 15px;  /* Supprimer le rayon de l'image */
             }}
             .tuile .text {{
                 position: absolute;
