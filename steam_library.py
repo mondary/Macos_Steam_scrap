@@ -131,7 +131,7 @@ def generer_page_web(jeux, taille_tuile=200):
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
-                background-color: #000000; /* Fond noir */
+                background-color: #121212; /* Fond sombre */
             }}
             .header {{
                 position: sticky;
@@ -153,14 +153,6 @@ def generer_page_web(jeux, taille_tuile=200):
                 color: white;
                 margin-right: 10px;
             }}
-            .header input[type="range"] {{
-                width: 150px; /* Largeur du curseur */
-                margin-left: 10px;
-            }}
-            .header label {{
-                color: white;
-                margin-right: 10px;
-            }}
             .container {{
                 display: flex;
                 flex-wrap: wrap;
@@ -173,16 +165,16 @@ def generer_page_web(jeux, taille_tuile=200):
                 width: {taille_tuile}px;
                 height: {taille_tuile}px;
                 margin: 10px;
-                background-color: #2c2c2c;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                color: white;
+                background: linear-gradient(135deg, #2c2c2c, #1e1e1e); /* Dégradé */
+                border-radius: 15px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
                 position: relative;
                 overflow: hidden;
+                transition: transform 0.3s, box-shadow 0.3s;
+            }}
+            .tuile:hover {{
+                transform: scale(1.05);
+                box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
             }}
             .tuile img {{
                 width: 100%;
@@ -192,26 +184,54 @@ def generer_page_web(jeux, taille_tuile=200):
                 top: 0;
                 left: 0;
                 z-index: 1;
-                opacity: 0.7;
+                opacity: 0.8;
+            }}
+            .tuile .overlay {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5); /* Ombre en bas */
+                z-index: 2;
+            }}
+            .tuile .text {{
+                position: absolute;
+                bottom: 10px; /* Positionner le texte en bas */
+                left: 10px; /* Positionner le texte à gauche */
+                color: white;
+                z-index: 3;
+                background: rgba(0, 0, 0, 0.7); /* Fond semi-transparent pour le texte */
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 14px;
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Ombre portée sur le texte */
             }}
             .tuile h2 {{
                 font-size: 16px;
                 margin: 0;
-                z-index: 2;
-                position: relative;
+                font-weight: bold;
             }}
             .tuile p {{
                 margin: 5px 0;
-                z-index: 2;
-                position: relative;
+                font-size: 12px;
+            }}
+            .badge {{
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: #ff4081; /* Couleur de badge */
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: bold;
             }}
         </style>
     </head>
     <body>
         <div class="header">
             <input type="text" placeholder="Rechercher un jeu..." id="searchInput" onkeyup="filterGames()">
-            <label for="tileSize">Taille des tuiles :</label>
-            <input type="range" id="tileSize" min="100" max="300" value="{taille_tuile}" onchange="updateTileSize(this.value)">
         </div>
         <div class="container" id="gameContainer">
     """
@@ -222,14 +242,21 @@ def generer_page_web(jeux, taille_tuile=200):
         temps_jeu = jeu.get('playtime_forever', 0)  # Temps en minutes
         heures = temps_jeu // 60
         minutes = temps_jeu % 60
-        # Remplacez 'image_url' par l'URL de l'image de votre jeu
-        image_url = f"steam_images/{appid}.jpg"  # Chemin vers l'image du jeu
+        image_path = f"steam_images/{appid}.jpg"
+
+        # Calculer le badge de temps de jeu
+        badge_text = f"{heures}h {minutes}min" if temps_jeu > 0 else "Nouveau"
+
         contenu_html += f"""
             <div class="tuile" data-name="{nom}">
-                <img src="{image_url}" alt="{nom}">
-                <h2>{nom}</h2>
-                <p>ID: {appid}</p>
-                <p>Temps de jeu: {heures}h {minutes}min</p>
+                <img src="{image_path}" alt="{nom}">
+                <div class="overlay"></div>
+                <div class="text">
+                    <h2>{nom}</h2>
+                    <p>Temps de jeu: {heures}h {minutes}min</p>
+                    <p>ID: {appid}</p>
+                </div>
+                <div class="badge">{badge_text}</div>
             </div>
         """
 
@@ -249,15 +276,6 @@ def generer_page_web(jeux, taille_tuile=200):
                     }} else {{
                         tuiles[i].style.display = 'none';
                     }}
-                }}
-            }}
-
-            function updateTileSize(size) {{
-                const container = document.getElementById('gameContainer');
-                const tuiles = container.getElementsByClassName('tuile');
-                for (let i = 0; i < tuiles.length; i++) {{
-                    tuiles[i].style.width = size + 'px';
-                    tuiles[i].style.height = size + 'px';
                 }}
             }}
         </script>
