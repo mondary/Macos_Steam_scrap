@@ -339,11 +339,18 @@ def main():
             jeux = obtenir_bibliotheque_steam(identifiants['api_key'], identifiants['steam_id'])
             obtenir_collections(identifiants['steam_id'])
             
-            # Demander à l'utilisateur s'il souhaite exécuter steam_image.py
-            if jeux:
-                executer_steam_images = input("Voulez-vous exécuter steam_image.py pour scrapper les images des jeux ? (oui/non) : ").strip().lower()
-                if executer_steam_images == 'oui':
-                    subprocess.run([sys.executable, 'steam_image.py'])
+            # Demander à l'utilisateur s'il souhaite exécuter steam_images.py
+            executer_steam_images = input("Voulez-vous exécuter steam_images.py pour scrapper les images des jeux ? (o/n) : ").strip().lower()
+            
+            if executer_steam_images == 'o':
+                try:
+                    subprocess.run([sys.executable, 'steam_images.py'])  # Exécute steam_images.py
+                except Exception as e:
+                    print(f"Erreur lors de l'exécution de steam_images.py : {str(e)}")
+            elif executer_steam_images == 'n':
+                print("Exécution annulée.")
+            else:
+                print("Réponse invalide. Veuillez répondre par 'o' ou 'n'.")
         elif choix == '2':
             obtenir_bibliotheque_et_collections()
         else:
