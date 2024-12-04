@@ -205,16 +205,6 @@ def generer_page_web(jeux, taille_tuile=460):
                 opacity: 0.8;
                 border-radius: 15px; /* Coins arrondis pour l'image */
             }}
-            .tuile .overlay {{
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5); /* Ombre en bas */
-                z-index: 2;
-                border-radius: 15px; /* Coins arrondis pour l'overlay */
-            }}
             .tuile .text {{
                 position: absolute;
                 bottom: 0; /* Positionner le texte en bas */
@@ -277,7 +267,6 @@ def generer_page_web(jeux, taille_tuile=460):
         contenu_html += f"""
             <div class="tuile" data-name="{nom}">
                 <img src="{image_path}" alt="{nom}">
-                <div class="overlay"></div>
                 <div class="text">
                     <h2>{nom}</h2>
                     <div class="info">
