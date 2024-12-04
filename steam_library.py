@@ -73,24 +73,8 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
             
             if jeux:
                 print(f"\nNombre total de jeux trouvés : {len(jeux)}")
-                print("\nListe de vos jeux Steam :")
-                print("-" * 50)
-                
-                for jeu in jeux:
-                    nom = jeu.get('name', 'Nom inconnu')
-                    appid = jeu.get('appid', 'ID inconnu')
-                    temps_jeu = jeu.get('playtime_forever', 0)  # Temps en minutes
-                    
-                    # Conversion du temps de jeu en heures et minutes
-                    heures = temps_jeu // 60
-                    minutes = temps_jeu % 60
-                    
-                    print(f"Nom: {nom}")
-                    print(f"ID: {appid}")
-                    print(f"Temps de jeu: {heures}h {minutes}min")
-                    print("-" * 50)
-                
-                return True  # Indiquer que la récupération a réussi
+                generer_page_web(jeux)
+                return jeux  # Retourner la liste des jeux
             else:
                 print("Aucun jeu trouvé dans votre bibliothèque.")
         else:
@@ -100,7 +84,137 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
     except Exception as e:
         print(f"Une erreur est survenue : {e}")
     
-    return False  # Indiquer que la récupération a échoué
+    return []  # Retourner une liste vide si la récupération a échoué
+
+def generer_page_web(jeux, taille_tuile=200):
+    """Génère une page HTML affichant les jeux sous forme de mosaïque avec un moteur de recherche."""
+    contenu_html = f"""
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mes Jeux Steam</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #1e1e1e;
+            }}
+            .header {{
+                position: sticky;
+                top: 0;
+                background-color: #2c2c2c;
+                padding: 10px;
+                text-align: center;
+                z-index: 1000;
+            }}
+            .header input {{
+                width: 80%;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+            }}
+            .container {{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 20px;
+                overflow-y: auto;
+                height: calc(100vh - 60px); /* Ajuster la hauteur pour le header */
+            }}
+            .tuile {{
+                width: {taille_tuile}px;
+                height: {taille_tuile}px;
+                margin: 10px;
+                background-color: #2c2c2c;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                position: relative;
+                overflow: hidden;
+            }}
+            .tuile img {{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                opacity: 0.7;
+            }}
+            .tuile h2 {{
+                font-size: 16px;
+                margin: 0;
+                z-index: 2;
+                position: relative;
+            }}
+            .tuile p {{
+                margin: 5px 0;
+                z-index: 2;
+                position: relative;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <input type="text" placeholder="Rechercher un jeu..." id="searchInput" onkeyup="filterGames()">
+        </div>
+        <div class="container" id="gameContainer">
+    """
+
+    for jeu in jeux:
+        nom = jeu.get('name', 'Nom inconnu')
+        appid = jeu.get('appid', 'ID inconnu')
+        temps_jeu = jeu.get('playtime_forever', 0)  # Temps en minutes
+        heures = temps_jeu // 60
+        minutes = temps_jeu % 60
+        # Remplacez 'image_url' par l'URL de l'image de votre jeu
+        image_url = f"https://via.placeholder.com/{taille_tuile}"  # Placeholder pour l'image
+        contenu_html += f"""
+            <div class="tuile" data-name="{nom}">
+                <img src="{image_url}" alt="{nom}">
+                <h2>{nom}</h2>
+                <p>ID: {appid}</p>
+                <p>Temps de jeu: {heures}h {minutes}min</p>
+            </div>
+        """
+
+    contenu_html += """
+        </div>
+        <script>
+            function filterGames() {{
+                const input = document.getElementById('searchInput');
+                const filter = input.value.toLowerCase();
+                const container = document.getElementById('gameContainer');
+                const tuiles = container.getElementsByClassName('tuile');
+
+                for (let i = 0; i < tuiles.length; i++) {{
+                    const nom = tuiles[i].getAttribute('data-name').toLowerCase();
+                    if (nom.includes(filter)) {{
+                        tuiles[i].style.display = '';
+                    }} else {{
+                        tuiles[i].style.display = 'none';
+                    }}
+                }}
+            }}
+        </script>
+    </body>
+    </html>
+    """
+
+    with open('mes_jeux.html', 'w', encoding='utf-8') as f:
+        f.write(contenu_html)
+    print("La page web a été générée : mes_jeux.html")
+    
+    # Ouvrir le fichier HTML dans le navigateur
+    webbrowser.open('mes_jeux.html')
 
 def obtenir_collections(steam_id):
     chemin_base = os.path.expanduser('~/Library/Application Support/Steam/userdata')
