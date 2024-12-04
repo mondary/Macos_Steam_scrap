@@ -228,6 +228,11 @@ def generer_page_web(jeux, taille_tuile=460):
                 font-size: 14px;
                 text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Ombre portée sur le texte */
                 text-align: center; /* Centrer le texte */
+                opacity: 0; /* Masquer par défaut */
+                transition: opacity 0.3s ease; /* Transition pour l'opacité */
+            }}
+            .tuile:hover .text {{
+                opacity: 1; /* Afficher au survol */
             }}
             .tuile h2 {{
                 font-size: 16px;
