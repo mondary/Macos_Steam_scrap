@@ -2,6 +2,11 @@ import json
 import os
 import requests
 from bs4 import BeautifulSoup
+import logging
+
+# Configuration de la journalisation
+logging.basicConfig(filename='steam_images.log', level=logging.DEBUG, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 def extraire_ids_jeux(fichier):
     """Extrait les IDs des jeux depuis steam_library.json."""
@@ -16,12 +21,12 @@ def extraire_ids_jeux(fichier):
             elif isinstance(response, list):
                 ids = [jeu['appid'] for jeu in response]  # Si response est une liste
             else:
-                print("Le format de 'response' dans steam_library.json n'est pas valide.")
+                logging.warning("Le format de 'response' dans steam_library.json n'est pas valide.")
                 return []
         elif isinstance(data, list):
             ids = [jeu['appid'] for jeu in data]  # Si le fichier est une liste de jeux
         else:
-            print("Le format de steam_library.json n'est pas valide.")
+            logging.warning("Le format de steam_library.json n'est pas valide.")
             return []
     
     return ids
@@ -33,6 +38,7 @@ def telecharger_image(app_id, url):
     }
     
     try:
+        logging.info(f"Tentative de téléchargement de l'image pour le jeu ID: {app_id}")
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         
@@ -47,16 +53,18 @@ def telecharger_image(app_id, url):
             # Créer le dossier steam_images s'il n'existe pas
             if not os.path.exists('steam_images'):
                 os.makedirs('steam_images')
-                print("Dossier 'steam_images' créé.")
+                logging.info("Dossier 'steam_images' créé.")
 
             # Sauvegarder l'image
             img_path = os.path.join('steam_images', f'{app_id}.jpg')
             with open(img_path, 'wb') as img_file:
                 img_file.write(img_response.content)
-            print(f"Image téléchargée pour le jeu {app_id} à l'URL : {img_url}")
+            logging.info(f"Image téléchargée pour le jeu {app_id} à l'URL : {img_url}")
         else:
+            logging.warning(f"Aucune image trouvée pour le jeu {app_id}.")
             print(f"Aucune image trouvée pour le jeu {app_id}.")
     except Exception as e:
+        logging.error(f"Erreur lors du téléchargement de l'image pour le jeu {app_id}: {str(e)}")
         print(f"Erreur lors du téléchargement de l'image pour le jeu {app_id}: {str(e)}")
 
 def main():
