@@ -117,7 +117,7 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
     
     return []  # Retourner une liste vide si la récupération a échoué
 
-def generer_page_web(jeux, taille_tuile=200):
+def generer_page_web(jeux, taille_tuile=460):
     """Génère une page HTML affichant les jeux sous forme de mosaïque avec un moteur de recherche."""
     nombre_jeux = len(jeux) if jeux else 0  # Compter le nombre de jeux, afficher 0 si la liste est vide
     nombre_gog = 0  # Remplacez par le nombre de jeux GOG si disponible
@@ -181,7 +181,7 @@ def generer_page_web(jeux, taille_tuile=200):
             }}
             .tuile {{
                 width: {taille_tuile}px;
-                height: {taille_tuile}px;
+                height: {int(taille_tuile * 215 / 460)}px;
                 margin: 10px;
                 background: linear-gradient(135deg, #2c2c2c, #1e1e1e); /* Dégradé */
                 border-radius: 15px;
@@ -305,9 +305,10 @@ def generer_page_web(jeux, taille_tuile=200):
 
             function updateTileSize(size) {{
                 const tuiles = document.getElementsByClassName('tuile');
+                const ratio = 215 / 460;  // Ratio de hauteur à largeur
                 for (let i = 0; i < tuiles.length; i++) {{
                     tuiles[i].style.width = size + 'px';
-                    tuiles[i].style.height = size + 'px';
+                    tuiles[i].style.height = (size * ratio) + 'px';  // Ajuster la hauteur en fonction du ratio
                 }}
             }}
         </script>
