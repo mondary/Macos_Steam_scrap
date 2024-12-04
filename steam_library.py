@@ -223,7 +223,7 @@ def generer_page_web(jeux, taille_tuile=200):
         heures = temps_jeu // 60
         minutes = temps_jeu % 60
         # Remplacez 'image_url' par l'URL de l'image de votre jeu
-        image_url = f"https://via.placeholder.com/{taille_tuile}"  # Placeholder pour l'image
+        image_url = f"steam_images/{appid}.jpg"  # Chemin vers l'image du jeu
         contenu_html += f"""
             <div class="tuile" data-name="{nom}">
                 <img src="{image_url}" alt="{nom}">
