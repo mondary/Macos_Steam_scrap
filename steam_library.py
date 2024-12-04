@@ -182,14 +182,13 @@ def generer_page_web(jeux, taille_tuile=460):
             .tuile {{
                 width: {taille_tuile}px;
                 height: {int(taille_tuile * 215 / 460)}px;
-                margin: 10px;
+                margin: 8px;
                 background: linear-gradient(135deg, #2c2c2c, #1e1e1e); /* Dégradé */
-                border-radius: 15px;
+                border-radius: 5px;  /* Rayon de 5px */
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
                 position: relative;
                 overflow: hidden;
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
-                border: 2px solid #444; /* Bordure pour plus de définition */
             }}
             .tuile:hover {{
                 transform: scale(1.05);
