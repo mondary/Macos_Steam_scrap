@@ -218,21 +218,22 @@ def generer_page_web(jeux, taille_tuile=200):
             }}
             .tuile .text {{
                 position: absolute;
-                bottom: 10px; /* Positionner le texte en bas */
-                left: 10px; /* Positionner le texte à gauche */
+                bottom: 0; /* Positionner le texte en bas */
+                left: 0; /* Positionner le texte à gauche */
+                width: 100%; /* S'étendre sur toute la largeur */
                 color: white;
                 z-index: 3;
                 background: rgba(0, 0, 0, 0.7); /* Fond semi-transparent pour le texte */
-                padding: 10px;
-                border-radius: 5px;
+                padding: 10px 0; /* Padding en haut et en bas, pas de padding à gauche et à droite */
+                border-radius: 0 0 15px 15px; /* Coins arrondis en bas */
                 font-size: 14px;
                 text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Ombre portée sur le texte */
+                text-align: center; /* Centrer le texte */
             }}
             .tuile h2 {{
                 font-size: 16px;
                 margin: 0;
                 font-weight: bold;
-                text-align: center; /* Centrer le titre */
             }}
             .tuile .info {{
                 font-size: 10px; /* Taille de police réduite pour le temps de jeu */
