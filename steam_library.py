@@ -17,21 +17,34 @@ def installer_dependances():
 
 def ouvrir_page_api():
     print("\nOuverture de la page Steam API Key dans votre navigateur...")
-    webbrowser.open('https://steamcommunity.com/dev/apikey')
-    print("1. Connectez-vous à votre compte Steam si ce n'est pas déjà fait")
-    print("2. Acceptez les conditions d'utilisation")
-    print("3. Entrez un nom de domaine (peut être 'localhost')")
-    print("4. Copiez la clé API qui s'affiche")
-    time.sleep(3)  # Attendre que l'utilisateur lise les instructions
+    print("Veuillez suivre les instructions sur la page pour obtenir votre clé API.")
+    countdown(5)  # Compte à rebours de 5 secondes
+    webbrowser.open('https://steamcommunity.com/dev/apikey')  # Ouvrir l'URL après le compte à rebours
 
 def ouvrir_page_steamidfinder(nom_utilisateur):
     print(f"\nOuverture de la page SteamID Finder pour l'utilisateur '{nom_utilisateur}'...")
-    webbrowser.open(f'https://www.steamidfinder.com/lookup/{nom_utilisateur}/')
     print("Veuillez copier votre Steam ID à partir de cette page.")
-    time.sleep(3)  # Attendre que l'utilisateur lise les instructions
+    countdown(5)  # Compte à rebours de 5 secondes
+    webbrowser.open(f'https://www.steamidfinder.com/lookup/{nom_utilisateur}/')  # Ouvrir l'URL après le compte à rebours
+
+def afficher_formulaire():
+    print("=" * 50)
+    print("  Bienvenue dans le programme de récupération de la bibliothèque Steam")
+    print("=" * 50)
+
+def afficher_question(cadre, question):
+    print(cadre)
+    print(f"  {question}")
+    print(cadre)
+
+def countdown(seconds):
+    for i in range(seconds, 0, -1):
+        print(f"Attendez {i} secondes...", end='\r')
+        time.sleep(1)
+    print(" " * 30, end='\r')  # Effacer la ligne
 
 def obtenir_bibliotheque_steam(api_key, steam_id):
-    # Appel à l'API Steam
+    # Appel à l'API Steam pour obtenir la bibliothèque de jeux
     url = f"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&format=json&include_appinfo=1"
     
     try:
@@ -99,22 +112,26 @@ def obtenir_bibliotheque_et_collections():
     # Installation des dépendances
     installer_dependances()
     
+    # Affichage du formulaire
+    afficher_formulaire()
+    
     # Ouverture de la page API
     ouvrir_page_api()
     
     # Demande de la clé API
-    print("\nEntrez votre Steam API Key (elle ressemble à une longue chaîne de caractères) :")
+    afficher_question("+" + "-" * 48 + "+", "Entrez votre Steam API Key :")
     api_key = input().strip()
     
     # Demande du nom d'utilisateur Steam
-    print("\nEntrez votre nom d'utilisateur Steam :")
+    afficher_question("+" + "-" * 48 + "+", "Saisissez votre pseudo Steam :")
     nom_utilisateur = input().strip()
     
     # Ouverture de la page SteamID Finder
     ouvrir_page_steamidfinder(nom_utilisateur)
     
     # Demande du SteamID
-    print("\nEntrez votre SteamID (le nombre à 17 chiffres) :")
+    print("Veuillez copier votre SteamID dans la fenêtre qui vient de s'ouvrir.")
+    afficher_question("+" + "-" * 48 + "+", "Entrez votre SteamID64 (le nombre à 17 chiffres) :")
     steam_id = input().strip()
     
     # Obtenir la bibliothèque
