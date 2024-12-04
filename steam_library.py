@@ -128,7 +128,7 @@ def generer_page_web(jeux, taille_tuile=200):
         <title>Mes Jeux Steam</title>
         <style>
             body {{
-                font-family: Arial, sans-serif;
+                font-family: 'Arial', sans-serif;
                 margin: 0;
                 padding: 0;
                 background-color: #121212; /* Fond sombre */
@@ -170,7 +170,8 @@ def generer_page_web(jeux, taille_tuile=200):
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
                 position: relative;
                 overflow: hidden;
-                transition: transform 0.3s, box-shadow 0.3s;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                border: 2px solid #444; /* Bordure pour plus de définition */
             }}
             .tuile:hover {{
                 transform: scale(1.05);
@@ -185,6 +186,7 @@ def generer_page_web(jeux, taille_tuile=200):
                 left: 0;
                 z-index: 1;
                 opacity: 0.8;
+                border-radius: 15px; /* Coins arrondis pour l'image */
             }}
             .tuile .overlay {{
                 position: absolute;
@@ -194,6 +196,7 @@ def generer_page_web(jeux, taille_tuile=200):
                 bottom: 0;
                 background: rgba(0, 0, 0, 0.5); /* Ombre en bas */
                 z-index: 2;
+                border-radius: 15px; /* Coins arrondis pour l'overlay */
             }}
             .tuile .text {{
                 position: absolute;
@@ -211,12 +214,14 @@ def generer_page_web(jeux, taille_tuile=200):
                 font-size: 16px;
                 margin: 0;
                 font-weight: bold;
+                text-align: center; /* Centrer le titre */
             }}
             .tuile .info {{
                 font-size: 10px; /* Taille de police réduite */
                 margin: 0;
                 display: flex;
                 justify-content: space-between; /* Aligner les éléments sur la même ligne */
+                align-items: center; /* Aligner verticalement */
             }}
         </style>
     </head>
@@ -235,6 +240,9 @@ def generer_page_web(jeux, taille_tuile=200):
         minutes = temps_jeu % 60
         image_path = f"steam_images/{appid}.jpg"
 
+        # Afficher le temps de jeu seulement s'il est supérieur à 0
+        temps_affiche = f"{heures}h {minutes}min" if temps_jeu > 0 else "0min"
+
         contenu_html += f"""
             <div class="tuile" data-name="{nom}">
                 <img src="{image_path}" alt="{nom}">
@@ -242,7 +250,7 @@ def generer_page_web(jeux, taille_tuile=200):
                 <div class="text">
                     <h2>{nom}</h2>
                     <div class="info">
-                        <span>{heures}h {minutes}min</span>
+                        <span>{temps_affiche}</span>
                         <span>ID: {appid}</span>
                     </div>
                 </div>
@@ -274,7 +282,6 @@ def generer_page_web(jeux, taille_tuile=200):
 
     with open('mes_jeux.html', 'w', encoding='utf-8') as f:
         f.write(contenu_html)
-    print("La page web a été générée : mes_jeux.html")
     
     # Ouvrir le fichier HTML dans le navigateur
     webbrowser.open('mes_jeux.html')
