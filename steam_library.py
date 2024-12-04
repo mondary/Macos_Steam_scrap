@@ -99,6 +99,11 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
             
             if jeux:
                 print(f"\nNombre total de jeux trouvés : {len(jeux)}")
+                # Sauvegarder les jeux dans steam_library.json
+                with open('steam_library.json', 'w', encoding='utf-8') as f:
+                    json.dump(jeux, f, ensure_ascii=False, indent=4)
+                print("Les informations des jeux ont été sauvegardées dans steam_library.json.")
+                
                 generer_page_web(jeux)
                 return jeux  # Retourner la liste des jeux
             else:
@@ -331,8 +336,14 @@ def main():
         
         if choix == '1':
             # Utiliser les identifiants stockés
-            obtenir_bibliotheque_steam(identifiants['api_key'], identifiants['steam_id'])
+            jeux = obtenir_bibliotheque_steam(identifiants['api_key'], identifiants['steam_id'])
             obtenir_collections(identifiants['steam_id'])
+            
+            # Demander à l'utilisateur s'il souhaite exécuter steam_image.py
+            if jeux:
+                executer_steam_images = input("Voulez-vous exécuter steam_image.py pour scrapper les images des jeux ? (oui/non) : ").strip().lower()
+                if executer_steam_images == 'oui':
+                    subprocess.run([sys.executable, 'steam_image.py'])
         elif choix == '2':
             obtenir_bibliotheque_et_collections()
         else:
