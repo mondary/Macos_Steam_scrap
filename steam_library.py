@@ -119,6 +119,10 @@ def obtenir_bibliotheque_steam(api_key, steam_id):
 
 def generer_page_web(jeux, taille_tuile=200):
     """Génère une page HTML affichant les jeux sous forme de mosaïque avec un moteur de recherche."""
+    nombre_jeux = len(jeux) if jeux else 0  # Compter le nombre de jeux, afficher 0 si la liste est vide
+    nombre_gog = 0  # Remplacez par le nombre de jeux GOG si disponible
+    nombre_epic = 0  # Remplacez par le nombre de jeux Epic Games si disponible
+
     contenu_html = f"""
     <!DOCTYPE html>
     <html lang="fr">
@@ -145,13 +149,27 @@ def generer_page_web(jeux, taille_tuile=200):
                 align-items: center;
             }}
             .header input[type="text"] {{
-                width: 60%;
+                width: 40%;
                 padding: 10px;
                 border: none;
                 border-radius: 5px;
                 background-color: #000000; /* Fond du champ de recherche noir */
                 color: white;
                 margin-right: 10px;
+            }}
+            .header .slider {{
+                margin-left: 10px;
+                width: 150px; /* Largeur du slider */
+            }}
+            .header .icon {{
+                margin-left: 10px;
+                vertical-align: middle;
+                width: 20px; /* Largeur de l'icône */
+                height: 20px; /* Hauteur de l'icône */
+            }}
+            .header .game-count {{
+                color: white; /* Couleur blanche pour le nombre de jeux */
+                margin-left: 5px; /* Espacement entre l'icône et le texte */
             }}
             .container {{
                 display: flex;
@@ -217,17 +235,25 @@ def generer_page_web(jeux, taille_tuile=200):
                 text-align: center; /* Centrer le titre */
             }}
             .tuile .info {{
-                font-size: 10px; /* Taille de police réduite */
+                font-size: 10px; /* Taille de police réduite pour le temps de jeu */
                 margin: 0;
                 display: flex;
                 justify-content: space-between; /* Aligner les éléments sur la même ligne */
                 align-items: center; /* Aligner verticalement */
+            }}
+            .tuile .info span:last-child {{
+                color: #aaa; /* Couleur plus claire pour l'ID */
+                font-size: 8px; /* Taille de police encore plus petite pour l'ID */
             }}
         </style>
     </head>
     <body>
         <div class="header">
             <input type="text" placeholder="Rechercher un jeu..." id="searchInput" onkeyup="filterGames()">
+            <input type="range" min="100" max="300" value="{taille_tuile}" class="slider" id="tileSizeSlider" onchange="updateTileSize(this.value)">
+            <img src="ico_steam.png" alt="Steam" class="icon"> <span class="game-count">{nombre_jeux}</span>
+            <img src="ico_gog.png" alt="GOG" class="icon"> <span class="game-count">{nombre_gog}</span>
+            <img src="ico_epic.png" alt="Epic Games" class="icon"> <span class="game-count">{nombre_epic}</span>
         </div>
         <div class="container" id="gameContainer">
     """
@@ -273,6 +299,14 @@ def generer_page_web(jeux, taille_tuile=200):
                     }} else {{
                         tuiles[i].style.display = 'none';
                     }}
+                }}
+            }}
+
+            function updateTileSize(size) {{
+                const tuiles = document.getElementsByClassName('tuile');
+                for (let i = 0; i < tuiles.length; i++) {{
+                    tuiles[i].style.width = size + 'px';
+                    tuiles[i].style.height = size + 'px';
                 }}
             }}
         </script>
