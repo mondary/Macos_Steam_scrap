@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import logging
+import sys
 
 # Configuration de la journalisation
 LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'steam_temp')  # Dossier pour le log
@@ -43,6 +44,15 @@ def extraire_ids_jeux(fichier):
     
     return ids
 
+def afficher_barre_progression(progress, total, description=""):
+    """Affiche une barre de progression dans le terminal."""
+    percent = (progress / total) * 100
+    bar_length = 40  # Longueur de la barre
+    block = int(bar_length * progress // total)
+    bar = '#' * block + '-' * (bar_length - block)
+    sys.stdout.write(f'\r[{bar}] {percent:.2f}% {description}')
+    sys.stdout.flush()
+
 def telecharger_image(app_id, url):
     """Télécharge l'image du jeu à partir de l'URL fournie."""
     headers = {
@@ -51,7 +61,7 @@ def telecharger_image(app_id, url):
     
     try:
         logging.info(f"Tentative de téléchargement de l'image pour le jeu ID: {app_id}")
-        response = requests.get(url, headers=headers, allow_redirects=True)
+        response = requests.get(url, headers=headers, allow_redirects=True, stream=True)
         response.raise_for_status()
         
         # Vérifiez si l'URL finale est celle du jeu
@@ -60,8 +70,15 @@ def telecharger_image(app_id, url):
             return
         
         img_path = os.path.join(IMAGES_DIR, f'{app_id}.jpg')  # Chemin d'image mis à jour
+        
+        # Utiliser la barre de progression pour le téléchargement de l'image
+        total_size = int(response.headers.get('content-length', 0))  # Taille totale du fichier
         with open(img_path, 'wb') as img_file:
-            img_file.write(response.content)
+            for data in response.iter_content(chunk_size=1024):
+                img_file.write(data)
+                afficher_barre_progression(img_file.tell(), total_size)  # Mettre à jour la barre de progression de l'image
+        
+        print()  # Nouvelle ligne après la barre de progression
         logging.info(f"Image téléchargée pour le jeu {app_id} à l'URL : {url}")
     except Exception as e:
         logging.error(f"Erreur lors du téléchargement de l'image pour le jeu {app_id}: {str(e)}")
@@ -69,9 +86,13 @@ def telecharger_image(app_id, url):
 def main():
     """Fonction principale pour télécharger les images."""
     ids = extraire_ids_jeux('steam_library.json')
-    for app_id in ids:
+    total_images = len(ids)  # Nombre total d'images à télécharger
+    for index, app_id in enumerate(ids):
         url = f"https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/{app_id}/capsule_616x353.jpg"
         telecharger_image(app_id, url)
+        afficher_barre_progression(index + 1, total_images, "Téléchargement des images")  # Mettre à jour la barre de progression globale
+
+    print()  # Nouvelle ligne après la barre de progression globale
 
 if __name__ == "__main__":
     main()
