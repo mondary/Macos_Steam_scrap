@@ -4,6 +4,7 @@
 v1 - "La Génèse" - Création du script initial pour récupérer la bibliothèque Steam.
 v2 - "Mosaïque Magique" - Ajout de la mise en forme en mosaïque pour afficher les jeux.
 v3 - "Recherche Chocolat" - Ajout d'un moteur de recherche et d'un curseur pour régler la taille des tuiles.
+v4 - "Design Noir Éblouissant" - Remise du fond en noir et amélioration de l'intégration du champ de recherche et du curseur.
 """
 
 import os
@@ -20,11 +21,17 @@ CREDENTIALS_FILE = 'credentials.json'
 
 # Fonction pour écrire le journal des modifications dans README.txt
 def ecrire_journal_modifications():
+    log_entries = [
+        "v1 - \"La Génèse\" - Création du script initial pour récupérer la bibliothèque Steam.",
+        "v2 - \"Mosaïque Magique\" - Ajout de la mise en forme en mosaïque pour afficher les jeux.",
+        "v3 - \"Recherche Chocolat\" - Ajout d'un moteur de recherche et d'un curseur pour régler la taille des tuiles.",
+        "v4 - \"Design Noir Éblouissant\" - Remise du fond en noir et amélioration de l'intégration du champ de recherche et du curseur."
+    ]
+    
     with open('README.txt', 'w', encoding='utf-8') as f:
         f.write("# Journal des modifications\n\n")
-        f.write("v1 - \"La Génèse\" - Création du script initial pour récupérer la bibliothèque Steam.\n")
-        f.write("v2 - \"Mosaïque Magique\" - Ajout de la mise en forme en mosaïque pour afficher les jeux.\n")
-        f.write("v3 - \"Recherche Chocolat\" - Ajout d'un moteur de recherche et d'un curseur pour régler la taille des tuiles.\n")
+        for entry in log_entries:
+            f.write(entry + "\n")
 
 # Appeler la fonction pour écrire le journal
 ecrire_journal_modifications()
