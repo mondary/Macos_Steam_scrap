@@ -14,9 +14,15 @@ STEAM_LIBRARY_FILE = os.path.join(ROOT_DIR, 'steam_temp', 'steam_library.json')
 if not os.path.exists(IMAGES_DIR):
     os.makedirs(IMAGES_DIR)
 
-# Créer le dossier pour le fichier HTML s'il n'existe pas
-if not os.path.exists(HTML_DIR):
-    os.makedirs(HTML_DIR)
+# Fonction pour trier les jeux
+def trier_jeux(jeux, critere):
+    if critere == "id":
+        return sorted(jeux, key=lambda x: x.get('appid', 0))
+    elif critere == "nom":
+        return sorted(jeux, key=lambda x: x.get('name', '').lower())
+    elif critere == "temps":
+        return sorted(jeux, key=lambda x: x.get('playtime_forever', 0))
+    return jeux
 
 def generer_page_web(jeux, taille_tuile=300):
     """Génère une page HTML affichant les jeux sous forme de mosaïque avec un moteur de recherche."""
@@ -71,6 +77,13 @@ def generer_page_web(jeux, taille_tuile=300):
             .header .game-count {{
                 color: white; /* Couleur blanche pour le nombre de jeux */
                 margin-left: 5px; /* Espacement entre l'icône et le texte */
+            }}
+            .header select {{
+                margin-left: 10px;
+                padding: 10px;
+                border-radius: 5px;
+                background-color: #000000; /* Fond du sélecteur noir */
+                color: white;
             }}
             .container {{
                 display: flex;
@@ -159,6 +172,11 @@ def generer_page_web(jeux, taille_tuile=300):
         <div class="header">
             <input type="text" placeholder="Rechercher un jeu..." id="searchInput" onkeyup="filterGames()">
             <input type="range" min="100" max="300" value="{taille_tuile}" class="slider" id="tileSizeSlider" onchange="updateTileSize(this.value)">
+            <select id="sortSelect" onchange="sortGames()">
+                <option value="id">Trier par ID</option>
+                <option value="nom">Trier par Nom</option>
+                <option value="temps">Trier par Temps de Jeu</option>
+            </select>
             <img src="My_games/ico_steam.png" alt="Steam" class="icon"> <span class="game-count">{nombre_jeux}</span>
             <img src="My_games/ico_gog.png" alt="GOG" class="icon"> <span class="game-count">{nombre_gog}</span>
             <img src="My_games/ico_epic.png" alt="Epic Games" class="icon"> <span class="game-count">{nombre_epic}</span>
@@ -191,7 +209,7 @@ def generer_page_web(jeux, taille_tuile=300):
         url_steam = f"https://store.steampowered.com/app/{appid}/"
 
         contenu_html += f"""
-            <a href="{url_steam}" class="tuile" data-name="{nom}" target="_blank">
+            <a href="{url_steam}" class="tuile" data-name="{nom}" data-appid="{appid}" data-playtime="{temps_jeu}" target="_blank">
                 <img src="{image_path}" alt="{nom}">
                 <div class="text">
                     <h2>{nom}</h2>
@@ -229,6 +247,26 @@ def generer_page_web(jeux, taille_tuile=300):
                     tuiles[i].style.width = size + 'px';
                     tuiles[i].style.height = (size * ratio) + 'px';  // Ajuster la hauteur en fonction du ratio
                 }}
+            }}
+
+            function sortGames() {{
+                const select = document.getElementById('sortSelect');
+                const sortBy = select.value;
+                const container = document.getElementById('gameContainer');
+                const tuiles = Array.from(container.getElementsByClassName('tuile'));
+
+                tuiles.sort((a, b) => {{
+                    if (sortBy === 'id') {{
+                        return a.getAttribute('data-appid') - b.getAttribute('data-appid');
+                    }} else if (sortBy === 'nom') {{
+                        return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                    }} else if (sortBy === 'temps') {{
+                        return a.getAttribute('data-playtime') - b.getAttribute('data-playtime');
+                    }}
+                }});
+
+                // Réorganiser les tuiles dans le conteneur
+                tuiles.forEach(tuile => container.appendChild(tuile));
             }}
         </script>
     </body>

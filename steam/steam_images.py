@@ -22,7 +22,7 @@ if not os.path.exists(IMAGES_DIR):
     os.makedirs(IMAGES_DIR)
 
 def extraire_ids_jeux(fichier):
-    """Extrait les IDs des jeux depuis steam_library.json."""
+    """Extrait les IDs des jeux depuis steam_library.json et retourne le nombre total d'IDs."""
     chemin_fichier = os.path.join(ROOT_DIR, 'steam_temp', fichier)
     with open(chemin_fichier, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -35,14 +35,14 @@ def extraire_ids_jeux(fichier):
                 ids = [jeu['appid'] for jeu in response]  # Si response est une liste
             else:
                 logging.warning("Le format de 'response' dans steam_library.json n'est pas valide.")
-                return []
+                return [], 0
         elif isinstance(data, list):
             ids = [jeu['appid'] for jeu in data]  # Si le fichier est une liste de jeux
         else:
             logging.warning("Le format de steam_library.json n'est pas valide.")
-            return []
+            return [], 0
     
-    return ids
+    return ids, len(ids)  # Retourner les IDs et le nombre total
 
 def afficher_barre_progression(progress, total, description=""):
     """Affiche une barre de progression dans le terminal."""
@@ -85,8 +85,11 @@ def telecharger_image(app_id, url):
 
 def main():
     """Fonction principale pour télécharger les images."""
-    ids = extraire_ids_jeux('steam_library.json')
-    total_images = len(ids)  # Nombre total d'images à télécharger
+    ids, total_images = extraire_ids_jeux('steam_library.json')  # Obtenir les IDs et le nombre total
+    if total_images == 0:
+        print("Aucune image à télécharger.")
+        return
+
     for index, app_id in enumerate(ids):
         url = f"https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/{app_id}/capsule_616x353.jpg"
         telecharger_image(app_id, url)
