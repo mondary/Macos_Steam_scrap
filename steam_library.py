@@ -212,20 +212,11 @@ def generer_page_web(jeux, taille_tuile=200):
                 margin: 0;
                 font-weight: bold;
             }}
-            .tuile p {{
-                margin: 5px 0;
-                font-size: 12px;
-            }}
-            .badge {{
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background-color: #ff4081; /* Couleur de badge */
-                color: white;
-                padding: 5px 10px;
-                border-radius: 5px;
-                font-size: 12px;
-                font-weight: bold;
+            .tuile .info {{
+                font-size: 10px; /* Taille de police réduite */
+                margin: 0;
+                display: flex;
+                justify-content: space-between; /* Aligner les éléments sur la même ligne */
             }}
         </style>
     </head>
@@ -244,19 +235,17 @@ def generer_page_web(jeux, taille_tuile=200):
         minutes = temps_jeu % 60
         image_path = f"steam_images/{appid}.jpg"
 
-        # Calculer le badge de temps de jeu
-        badge_text = f"{heures}h {minutes}min" if temps_jeu > 0 else "Nouveau"
-
         contenu_html += f"""
             <div class="tuile" data-name="{nom}">
                 <img src="{image_path}" alt="{nom}">
                 <div class="overlay"></div>
                 <div class="text">
                     <h2>{nom}</h2>
-                    <p>Temps de jeu: {heures}h {minutes}min</p>
-                    <p>ID: {appid}</p>
+                    <div class="info">
+                        <span>{heures}h {minutes}min</span>
+                        <span>ID: {appid}</span>
+                    </div>
                 </div>
-                <div class="badge">{badge_text}</div>
             </div>
         """
 
