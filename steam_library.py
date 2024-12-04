@@ -1,3 +1,11 @@
+"""
+# Journal des modifications
+
+v1 - "La Génèse" - Création du script initial pour récupérer la bibliothèque Steam.
+v2 - "Mosaïque Magique" - Ajout de la mise en forme en mosaïque pour afficher les jeux.
+v3 - "Recherche Chocolat" - Ajout d'un moteur de recherche et d'un curseur pour régler la taille des tuiles.
+"""
+
 import os
 import subprocess
 import sys
@@ -9,6 +17,17 @@ import json
 
 # Fichier pour stocker les informations de connexion
 CREDENTIALS_FILE = 'credentials.json'
+
+# Fonction pour écrire le journal des modifications dans README.txt
+def ecrire_journal_modifications():
+    with open('README.txt', 'w', encoding='utf-8') as f:
+        f.write("# Journal des modifications\n\n")
+        f.write("v1 - \"La Génèse\" - Création du script initial pour récupérer la bibliothèque Steam.\n")
+        f.write("v2 - \"Mosaïque Magique\" - Ajout de la mise en forme en mosaïque pour afficher les jeux.\n")
+        f.write("v3 - \"Recherche Chocolat\" - Ajout d'un moteur de recherche et d'un curseur pour régler la taille des tuiles.\n")
+
+# Appeler la fonction pour écrire le journal
+ecrire_journal_modifications()
 
 def installer_dependances():
     print("Vérification et installation des dépendances nécessaires...")
@@ -105,7 +124,7 @@ def generer_page_web(jeux, taille_tuile=200):
             .header {{
                 position: sticky;
                 top: 0;
-                background-color: #2c2c2c;
+                background-color: #3e2723; /* Chocolat foncé */
                 padding: 10px;
                 text-align: center;
                 z-index: 1000;
@@ -115,6 +134,14 @@ def generer_page_web(jeux, taille_tuile=200):
                 padding: 10px;
                 border: none;
                 border-radius: 5px;
+                margin-bottom: 10px;
+            }}
+            .header label {{
+                color: white;
+                margin-right: 10px;
+            }}
+            .header input[type="range"] {{
+                width: 80%;
             }}
             .container {{
                 display: flex;
@@ -165,6 +192,8 @@ def generer_page_web(jeux, taille_tuile=200):
     <body>
         <div class="header">
             <input type="text" placeholder="Rechercher un jeu..." id="searchInput" onkeyup="filterGames()">
+            <label for="tileSize">Taille des tuiles :</label>
+            <input type="range" id="tileSize" min="100" max="300" value="{taille_tuile}" onchange="updateTileSize(this.value)">
         </div>
         <div class="container" id="gameContainer">
     """
@@ -202,6 +231,15 @@ def generer_page_web(jeux, taille_tuile=200):
                     }} else {{
                         tuiles[i].style.display = 'none';
                     }}
+                }}
+            }}
+
+            function updateTileSize(size) {{
+                const container = document.getElementById('gameContainer');
+                const tuiles = container.getElementsByClassName('tuile');
+                for (let i = 0; i < tuiles.length; i++) {{
+                    tuiles[i].style.width = size + 'px';
+                    tuiles[i].style.height = size + 'px';
                 }}
             }}
         </script>
